@@ -36,12 +36,16 @@ jobs:
           VERSION="$(python3 -c 'import json; print(json.load(open("manifest.json"))["version"])')"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           mkdir -p dist
+
+          # 1. Copia o pacote original compilado (.levipack)
           cp build/android/arm64-v8a/release/DynamicShadows.levipack "dist/DynamicShadows-${VERSION}.levipack"
-          cp "dist/DynamicShadows-${VERSION}.levipack" "dist/DynamicShadows-${VERSION}.zip"
+
+          # 2. Cria um ZIP com o repositório inteiro (incluindo todas as pastas e a build compilada)
+          zip -r "dist/DynamicShadows-Repository-${VERSION}.zip" . -x "dist/*" ".git/*" "build/*"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: DynamicShadows-Android
+          name: DynamicShadows-Android-FullRepo
           path: |
             build/android/arm64-v8a/release/DynamicShadows.so
             dist/DynamicShadows-*.levipack
